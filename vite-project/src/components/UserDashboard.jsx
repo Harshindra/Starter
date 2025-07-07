@@ -70,37 +70,37 @@ export default function UserDashboard({
 
   return (
     <div className="user-dashboard max-w-7xl mx-auto p-6">
-      <div className="dashboard-header mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">
+      <div className="dashboard-header mb-8 text-center">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-4 drop-shadow-sm">
           Patient Portal
         </h1>
-        <p className="text-gray-600">
-          Book appointments and manage your healthcare
+        <p className="text-gray-700 text-lg font-medium">
+          Book appointments and manage your healthcare journey
         </p>
       </div>
 
       {/* Navigation */}
-      <div className="dashboard-nav mb-6">
-        <div className="nav-buttons flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
+      <div className="dashboard-nav mb-8 flex justify-center">
+        <div className="nav-buttons flex space-x-2 bg-gradient-to-r from-purple-100 to-blue-100 p-2 rounded-2xl backdrop-blur-sm">
           <button
             onClick={() => setCurrentView("book")}
-            className={`nav-button px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`nav-button px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
               currentView === "book"
-                ? "bg-white text-blue-600 shadow-sm"
-                : "text-gray-600 hover:text-gray-800"
+                ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg transform scale-105"
+                : "text-purple-700 hover:text-purple-900 hover:bg-white/50"
             }`}
           >
-            Book Appointment
+            📅 Book Appointment
           </button>
           <button
             onClick={() => setCurrentView("appointments")}
-            className={`nav-button px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`nav-button px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
               currentView === "appointments"
-                ? "bg-white text-blue-600 shadow-sm"
-                : "text-gray-600 hover:text-gray-800"
+                ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg transform scale-105"
+                : "text-purple-700 hover:text-purple-900 hover:bg-white/50"
             }`}
           >
-            My Appointments
+            📋 My Appointments
           </button>
         </div>
       </div>
@@ -109,43 +109,55 @@ export default function UserDashboard({
         <div className="booking-section">
           {!selectedDoctor ? (
             <div className="doctor-selection">
-              <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-                Choose a Doctor
+              <h2 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent">
+                Choose Your Doctor
               </h2>
-              <div className="doctors-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {doctors.map((doctor) => (
-                  <div
-                    key={doctor.id}
-                    onClick={() => handleDoctorSelect(doctor)}
-                    className="doctor-card bg-white rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition-shadow border-2 border-transparent hover:border-blue-200"
-                  >
-                    <div className="doctor-header flex items-center mb-4">
-                      <img
-                        src={doctor.avatar}
-                        alt={doctor.name}
-                        className="doctor-avatar w-16 h-16 rounded-full object-cover mr-4"
-                      />
-                      <div>
-                        <h3 className="doctor-name text-lg font-semibold text-gray-800">
-                          {doctor.name}
-                        </h3>
-                        <p className="doctor-specialty text-blue-600 font-medium">
-                          {doctor.specialty}
-                        </p>
+              <div className="doctors-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {doctors.map((doctor, index) => {
+                  const gradients = [
+                    "from-pink-400 to-purple-500",
+                    "from-blue-400 to-teal-500",
+                    "from-green-400 to-blue-500",
+                    "from-yellow-400 to-red-500",
+                  ];
+                  return (
+                    <div
+                      key={doctor.id}
+                      onClick={() => handleDoctorSelect(doctor)}
+                      className={`doctor-card bg-gradient-to-br ${gradients[index % 4]} rounded-2xl shadow-xl p-6 cursor-pointer hover:shadow-2xl transition-all duration-300 border-2 border-white/20 hover:border-white/40 backdrop-blur-sm transform hover:-translate-y-2 hover:scale-105`}
+                    >
+                      <div className="doctor-header flex items-center mb-4">
+                        <img
+                          src={doctor.avatar}
+                          alt={doctor.name}
+                          className="doctor-avatar w-16 h-16 rounded-full object-cover mr-4 border-3 border-white/50 shadow-lg"
+                        />
+                        <div>
+                          <h3 className="doctor-name text-lg font-bold text-white drop-shadow-md">
+                            {doctor.name}
+                          </h3>
+                          <p className="doctor-specialty text-white/90 font-semibold text-sm bg-white/20 px-2 py-1 rounded-full">
+                            {doctor.specialty}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="doctor-details space-y-3">
+                        <div className="experience flex items-center text-sm text-white/90 bg-white/20 rounded-lg px-3 py-2">
+                          <span className="mr-2 text-lg">🎓</span>
+                          <span className="font-medium">
+                            {doctor.experience} experience
+                          </span>
+                        </div>
+                        <div className="rating flex items-center text-sm text-white/90 bg-white/20 rounded-lg px-3 py-2">
+                          <span className="mr-2 text-lg">⭐</span>
+                          <span className="font-medium">
+                            {doctor.rating}/5.0 rating
+                          </span>
+                        </div>
                       </div>
                     </div>
-                    <div className="doctor-details space-y-2">
-                      <div className="experience flex items-center text-sm text-gray-600">
-                        <span className="mr-2">🎓</span>
-                        <span>{doctor.experience} experience</span>
-                      </div>
-                      <div className="rating flex items-center text-sm text-gray-600">
-                        <span className="mr-2">⭐</span>
-                        <span>{doctor.rating}/5.0 rating</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ) : (
