@@ -7,11 +7,19 @@ import {
 } from "../utils/appointmentUtils";
 import AppointmentList from "./AppointmentList";
 
-export default function DoctorDashboard({ appointments, onAppointmentUpdate }) {
+export default function DoctorDashboard({
+  appointments,
+  onAppointmentUpdate,
+  currentUser,
+}) {
   const [selectedDoctorId, setSelectedDoctorId] = useState(doctors[0].id);
   const [currentView, setCurrentView] = useState("appointments"); // 'appointments' or 'schedule'
 
-  const selectedDoctor = doctors.find((doc) => doc.id === selectedDoctorId);
+  // Use current user data for doctor info, fallback to mock data for demo
+  const selectedDoctor =
+    currentUser.userType === "doctor"
+      ? currentUser
+      : doctors.find((doc) => doc.id === selectedDoctorId);
   const doctorAppointments = getUpcomingAppointments(
     appointments,
     "doctor",

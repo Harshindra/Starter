@@ -1,14 +1,28 @@
 import { useState, useEffect } from "react";
 import { getInitialAppointments, saveAppointments } from "./data/mockData";
+import {
+  getCurrentUser,
+  setCurrentUser,
+  clearCurrentUser,
+  initializeDemoUsers,
+} from "./data/users";
+import { isDoctor, formatUserRole } from "./utils/authUtils";
+import AuthPage from "./components/Auth/AuthPage";
 import UserDashboard from "./components/UserDashboard";
 import DoctorDashboard from "./components/DoctorDashboard";
 
 export default function App() {
-  const [userType, setUserType] = useState("user"); // 'user' or 'doctor'
+  const [currentUser, setCurrentUserState] = useState(null);
   const [appointments, setAppointments] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Initialize demo users and load current user
+    initializeDemoUsers();
+    const user = getCurrentUser();
+    setCurrentUserState(user);
     setAppointments(getInitialAppointments());
+    setIsLoading(false);
   }, []);
 
   const handleAppointmentUpdate = (updatedAppointments) => {
@@ -16,9 +30,38 @@ export default function App() {
     saveAppointments(updatedAppointments);
   };
 
+  const handleAuthenticated = (user) => {
+    setCurrentUserState(user);
+    setCurrentUser(user);
+  };
+
+  const handleLogout = () => {
+    setCurrentUserState(null);
+    clearCurrentUser();
+  };
+
+  // Show loading screen while initializing
+  if (isLoading) {
+    return (
+      <div className="loading-screen min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="loading-spinner w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading MediBook...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show authentication page if user is not logged in
+  if (!currentUser) {
+    return <AuthPage onAuthenticated={handleAuthenticated} />;
+  }
+
+  const userIsDoctor = isDoctor(currentUser);
+
   return (
     <div className="app min-h-screen bg-gray-50">
-      {/* Header with Role Toggle */}
+      {/* Header with User Info and Logout */}
       <header className="app-header bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
@@ -29,29 +72,31 @@ export default function App() {
               </p>
             </div>
 
-            <div className="role-toggle">
-              <div className="toggle-container bg-gray-100 p-1 rounded-lg flex">
-                <button
-                  onClick={() => setUserType("user")}
-                  className={`toggle-button px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    userType === "user"
-                      ? "bg-white text-blue-600 shadow-sm"
-                      : "text-gray-600 hover:text-gray-800"
-                  }`}
-                >
-                  👤 Patient
-                </button>
-                <button
-                  onClick={() => setUserType("doctor")}
-                  className={`toggle-button px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    userType === "doctor"
-                      ? "bg-white text-blue-600 shadow-sm"
-                      : "text-gray-600 hover:text-gray-800"
-                  }`}
-                >
-                  👨‍⚕️ Doctor
-                </button>
+            <div className="user-section flex items-center space-x-4">
+              {/* User Info */}
+              <div className="user-info flex items-center space-x-3">
+                <img
+                  src={currentUser.avatar}
+                  alt={currentUser.name}
+                  className="user-avatar w-10 h-10 rounded-full object-cover"
+                />
+                <div className="user-details">
+                  <div className="user-name text-sm font-medium text-gray-800">
+                    {currentUser.name}
+                  </div>
+                  <div className="user-role text-xs text-gray-600">
+                    {formatUserRole(currentUser.userType)}
+                  </div>
+                </div>
               </div>
+
+              {/* Logout Button */}
+              <button
+                onClick={handleLogout}
+                className="logout-button px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Sign Out
+              </button>
             </div>
           </div>
         </div>
@@ -59,15 +104,17 @@ export default function App() {
 
       {/* Main Content */}
       <main className="main-content">
-        {userType === "user" ? (
-          <UserDashboard
-            appointments={appointments}
-            onAppointmentUpdate={handleAppointmentUpdate}
-          />
-        ) : (
+        {userIsDoctor ? (
           <DoctorDashboard
             appointments={appointments}
             onAppointmentUpdate={handleAppointmentUpdate}
+            currentUser={currentUser}
+          />
+        ) : (
+          <UserDashboard
+            appointments={appointments}
+            onAppointmentUpdate={handleAppointmentUpdate}
+            currentUser={currentUser}
           />
         )}
       </main>
@@ -80,7 +127,7 @@ export default function App() {
               &copy; 2024 MediBook. Healthcare appointment management system.
             </p>
             <p className="mt-1">
-              Switch between Patient and Doctor views using the toggle above.
+              Secure appointment booking for patients and healthcare providers.
             </p>
           </div>
         </div>

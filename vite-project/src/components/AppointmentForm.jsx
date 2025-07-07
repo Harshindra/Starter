@@ -6,11 +6,12 @@ export default function AppointmentForm({
   selectedSlot,
   onSubmit,
   onCancel,
+  currentUser,
 }) {
   const [formData, setFormData] = useState({
-    patientName: "",
-    patientEmail: "",
-    patientPhone: "",
+    patientName: currentUser?.name || "",
+    patientEmail: currentUser?.email || "",
+    patientPhone: currentUser?.phone || "",
     reason: "",
     notes: "",
   });

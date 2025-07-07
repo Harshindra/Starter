@@ -10,7 +10,11 @@ import Calendar from "./Calendar";
 import AppointmentForm from "./AppointmentForm";
 import AppointmentList from "./AppointmentList";
 
-export default function UserDashboard({ appointments, onAppointmentUpdate }) {
+export default function UserDashboard({
+  appointments,
+  onAppointmentUpdate,
+  currentUser,
+}) {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [showBookingForm, setShowBookingForm] = useState(false);
@@ -34,9 +38,9 @@ export default function UserDashboard({ appointments, onAppointmentUpdate }) {
       date: selectedSlot.date.toISOString().split("T")[0],
       time: selectedSlot.time,
       status: "pending",
-      patientName: formData.patientName,
-      patientEmail: formData.patientEmail,
-      patientPhone: formData.patientPhone,
+      patientName: currentUser.name,
+      patientEmail: currentUser.email,
+      patientPhone: currentUser.phone || formData.patientPhone,
       reason: formData.reason,
       notes: formData.notes,
       createdAt: new Date().toISOString(),
@@ -61,7 +65,7 @@ export default function UserDashboard({ appointments, onAppointmentUpdate }) {
   const userAppointments = getUpcomingAppointments(
     appointments,
     "user",
-    selectedDoctor?.id || "user",
+    currentUser.email,
   );
 
   return (
@@ -185,6 +189,7 @@ export default function UserDashboard({ appointments, onAppointmentUpdate }) {
                       selectedSlot={selectedSlot}
                       onSubmit={handleAppointmentSubmit}
                       onCancel={() => setShowBookingForm(false)}
+                      currentUser={currentUser}
                     />
                   </div>
                 )}
